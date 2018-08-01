@@ -4,10 +4,16 @@ import (
 	"github.com/go-chi/chi"
 	"net/http"
 	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"html/template"
 	"github.com/go-chi/chi/middleware"
+	"github.com/joho/godotenv"
+	"fmt"
+	"os"
 )
+
+var Db *sql.DB
 
 func main() {
 	DbSetup()
@@ -34,15 +40,19 @@ func main() {
 
 func DbSetup() {
 	var err error
-	Db, err = sql.Open("sqlite3", "storage.db")
-
+	godotenv.Load()
+	var connString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?allowNativePasswords=true&tls=true",
+		os.Getenv("SERVER_ADMIN_LOGIN_NAME"),
+		os.Getenv("SERVER_ADMIN_PASSWORD"),
+		os.Getenv("SERVER_HOST"),
+		os.Getenv("DATABASE_NAME"))
+	Db, err = sql.Open("mysql", connString)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	_, err = Db.Exec("create table if not exists tasks(id integer not null primary key autoincrement, name varchar not null)")
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	//
+	//_, err = Db.Exec("create table if not exists tasks(id integer not null primary key autoincrement, name varchar not null)")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 }

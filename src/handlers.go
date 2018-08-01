@@ -33,9 +33,6 @@ func PostTasks(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTasks(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-
 	Db.Exec("delete from tasks where id = ?", id)
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"msg": "DELETED Tasks " + id})
+	w.WriteHeader(http.StatusNoContent)
 }
